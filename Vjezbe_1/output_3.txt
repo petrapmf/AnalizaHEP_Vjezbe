@@ -1,0 +1,7 @@
+output_3.txt
+Zadatak_2.txt
+Zadatak_3.sh
+total 12K
+-rw-r--r--. 1 pakrap pakrap 53 Lis  6 12:47 Zadatak_2.txt
+-rw-r--r--. 1 pakrap pakrap 40 Lis  6 13:04 output_3.txt
+-rw-r--r--. 1 pakrap pakrap 37 Lis  6 13:05 Zadatak_3.sh
