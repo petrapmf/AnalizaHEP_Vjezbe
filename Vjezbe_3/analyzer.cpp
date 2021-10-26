@@ -19,7 +19,7 @@ int main() {
 	ofstream MyFile;
 	MyFile.open("Analysis.txt");
 
-	MyFile << "1st NAME\tpx   py   pz\t\t\t2nd NAME\tpx   py   pz\n";
+	MyFile << "1st NAME\tpx   py   pz   E\t\t\t2nd NAME\tpx   py   pz   E\n";
 
 	for (i = 0; i < 10000; i++) {
 		ElementaryParticle higgs("Higgs boson", 124.97, true);
@@ -34,7 +34,7 @@ int main() {
 		ElementaryParticle* particle2 = new ElementaryParticle();
 		higgs.bosonDecay(particle1, particle2);
 
-		MyFile << particle1->name << "   " << particle1->px << "   " << particle1->py << "   " << particle1->pz << "      " << particle2->name << "   " << particle2->px << "   " << particle2->py << "   " << particle2->pz << "\n";
+		MyFile << particle1->name << "   " << particle1->px << "   " << particle1->py << "   " << particle1->pz << "   " << particle1->energy << "      " << particle2->name << "   " << particle2->px << "   " << particle2->py << "   " << particle2->pz << "   " << particle2->energy << "\n";
 	}
 
 	MyFile.close();
