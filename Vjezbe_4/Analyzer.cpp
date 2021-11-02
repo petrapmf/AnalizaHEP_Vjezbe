@@ -20,7 +20,7 @@ void Analyzer::readAnalysis() {
 	MyFile.open("/home/pakrap/Vjezbe/Vjezbe_3/Analysis.txt");
 
 	string line, name1, name2;
-	float px1, px2, py1, py2, pz1, pz2, E1, E2;
+	float px1, px2, py1, py2, pz1, pz2, pt1, pt2, E1, E2;
 	bool skip;
 
 	skip = true;
@@ -33,8 +33,8 @@ void Analyzer::readAnalysis() {
 				skip = false;
 				continue;
 			}
-			linestream >> name1 >> px1 >> py1 >> pz1 >> E1 >> name2 >> px2 >> py2 >> pz2 >> E2;
-			cout << name1 << " "<< px1 << " " << py1 << " " << pz1 << " " << E1 << " " << name2 << " " << px2 << " "<< py2 << " "<< pz2 << " "<< E2 << endl;
+			linestream >> name1 >> px1 >> py1 >> pz1 >> pt1 >> E1 >> name2 >> px2 >> py2 >> pz2 >> pt2 >> E2;
+			cout << name1 << " "<< px1 << " " << py1 << " " << pz1 << " " << pt1 << " " << E1 << " " << name2 << " " << px2 << " "<< py2 << " "<< pz2 << " " << pt2 << " " << E2 << endl;
 		}
 	}
 	MyFile.close();
@@ -52,22 +52,26 @@ void Analyzer::ConvertTxtToRootFile() {
 	Float_t px1;
 	Float_t py1;
 	Float_t pz1;
+	Float_t pt1;
 	Float_t E1;
 
 	Char_t name2;
 	Float_t px2;
 	Float_t py2;
 	Float_t pz2;
+	Float_t pt2;
 	Float_t E2;
 
 	tree->Branch("name1", &name1, "name1/C"); //Branch(name, address, string describing the leaf list); leaf: name/type
 	tree->Branch("px1", &px1, "px1/F");
 	tree->Branch("py1", &py1, "py1/F");
 	tree->Branch("pz1", &pz1, "pz1/F");
+	tree->Branch("pt1", &pt1, "pt1/F");
 	tree->Branch("name2", &name2, "name2/C");
 	tree->Branch("px2", &px2, "px2/F");
 	tree->Branch("py2", &py2, "py2/F");
 	tree->Branch("pz2", &pz2, "pz2/F");
+	tree->Branch("pt2", &pt2, "pt2/F");
 
 	bool skip;
     skip = true;
@@ -81,8 +85,8 @@ void Analyzer::ConvertTxtToRootFile() {
 				skip = false;
 				continue;
 			}
-			linestream >> name1 >> px1 >> py1 >> pz1 >> E1 >> name2 >> px2 >> py2 >> pz2 >> E2;
-			cout << name1 << " " << px1 << " " << py1 << " " << pz1 << " " << E1 << " " << name2 << " " << px2 << " " << py2 << " " << pz2 << " " << E2 << endl;
+			linestream >> name1 >> px1 >> py1 >> pz1 >> pt1 >> E1 >> name2 >> px2 >> py2 >> pz2 >> pt2 >> E2;
+			cout << name1 << " " << px1 << " " << py1 << " " << pz1 << " " << pt1 << " " << E1 << " " << name2 << " " << px2 << " " << py2 << " " << pz2 << " " << pt2 << " " << E2 << endl;
 			tree->Fill();
 		}
 	}
