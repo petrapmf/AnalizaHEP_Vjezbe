@@ -29,11 +29,13 @@ public :
    Float_t         py1;
    Float_t         pz1;
    Float_t         pt1;
+   Float_t         E1;
    Char_t          name2[22];
    Float_t         px2;
    Float_t         py2;
    Float_t         pz2;
    Float_t         pt2;
+   Float_t         E2;
 
    // List of branches
    TBranch        *b_name1;   //!
@@ -41,11 +43,13 @@ public :
    TBranch        *b_py1;   //!
    TBranch        *b_pz1;   //!
    TBranch        *b_pt1;   //!
+   TBranch        *b_E1;   //!
    TBranch        *b_name2;   //!
    TBranch        *b_px2;   //!
    TBranch        *b_py2;   //!
    TBranch        *b_pz2;   //!
    TBranch        *b_pt2;   //!
+   TBranch        *b_E2;   //!
 
    Analyzer(TTree *tree=0);
    virtual ~Analyzer();
@@ -124,11 +128,13 @@ void Analyzer::Init(TTree *tree)
    fChain->SetBranchAddress("py1", &py1, &b_py1);
    fChain->SetBranchAddress("pz1", &pz1, &b_pz1);
    fChain->SetBranchAddress("pt1", &pt1, &b_pt1);
+   fChain->SetBranchAddress("E1", &E1, &b_E1);
    fChain->SetBranchAddress("name2", name2, &b_name2);
    fChain->SetBranchAddress("px2", &px2, &b_px2);
    fChain->SetBranchAddress("py2", &py2, &b_py2);
    fChain->SetBranchAddress("pz2", &pz2, &b_pz2);
    fChain->SetBranchAddress("pt2", &pt2, &b_pt2);
+   fChain->SetBranchAddress("E2", &E2, &b_E2);
    Notify();
 }
 
