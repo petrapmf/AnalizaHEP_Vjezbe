@@ -67,11 +67,13 @@ void Analyzer::ConvertTxtToRootFile() {
 	tree->Branch("py1", &py1, "py1/F");
 	tree->Branch("pz1", &pz1, "pz1/F");
 	tree->Branch("pt1", &pt1, "pt1/F");
+	tree->Branch("E1", &E1, "E1/F");
 	tree->Branch("name2", &name2, "name2/C");
 	tree->Branch("px2", &px2, "px2/F");
 	tree->Branch("py2", &py2, "py2/F");
 	tree->Branch("pz2", &pz2, "pz2/F");
 	tree->Branch("pt2", &pt2, "pt2/F");
+	tree->Branch("E2", &E2, "E2/F");
 
 	bool skip;
     skip = true;
