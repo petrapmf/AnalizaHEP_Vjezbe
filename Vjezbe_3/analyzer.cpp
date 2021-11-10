@@ -19,7 +19,7 @@ int main() {
 	ofstream MyFile;
 	MyFile.open("Analysis.txt");
 
-	MyFile << "1st NAME\tpx   py   pz   E\t\t\t2nd NAME\tpx   py   pz   E\n";
+	MyFile << "1st NAME\tpx   py   pz   pt1   E\t\t\t2nd NAME\tpx   py   pz   pt2   E\n";
 
 	for (i = 0; i < 10000; i++) {
 		ElementaryParticle higgs("Higgs boson", 124.97, true);
@@ -27,14 +27,14 @@ int main() {
 		higgs.px = dist(gen);
 		higgs.py = dist(gen);
 		higgs.pz = dist(gen);
-		//higgs.momentum(higgs.px, higgs.py, higgs.pz);
+		higgs.momentum(higgs.px, higgs.py, higgs.pz, higgs.mass);
 		//higgs.transMomentum(higgs.px, higgs.py);
 
 		ElementaryParticle* particle1 = new ElementaryParticle();
 		ElementaryParticle* particle2 = new ElementaryParticle();
 		higgs.bosonDecay(particle1, particle2);
 
-		MyFile << particle1->name << "   " << particle1->px << "   " << particle1->py << "   " << particle1->pz << "   " << particle1->energy << "      " << particle2->name << "   " << particle2->px << "   " << particle2->py << "   " << particle2->pz << "   " << particle2->energy << "\n";
+		MyFile << particle1->name << "   " << particle1->px << "   " << particle1->py << "   " << particle1->pz << "   " << particle1->pt << "   " << particle1->energy << "      " << particle2->name << "   " << particle2->px << "   " << particle2->py << "   " << particle2->pz << "   " << particle2->pt << "   " << particle2->energy << "\n";
 	}
 
 	MyFile.close();
