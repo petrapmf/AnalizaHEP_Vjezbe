@@ -67,17 +67,15 @@ void Analyzer::Loop()
        TH1F* hbdt3 = new TH1F("hbdt3", "Boosted Decision Tree", 40, 0, 10);
        TH1F* hbdt4 = new TH1F("hbdt4", "Boosted Decision Tree", 40, 0, 10);
 
-       /*TLorentzVector* higgs = new TLorentzVector();
-       TLorentzVector* Z_e = new TLorentzVector();
-       TLorentzVector* Z_mi = new TLorentzVector();
-       TLorentzVector* lep_e1 = new TLorentzVector();
-       TLorentzVector* lep_mi1 = new TLorentzVector();
-       TLorentzVector* lep_e2 = new TLorentzVector();
-       TLorentzVector* lep_mi2 = new TLorentzVector();
+       TLorentzVector* higgs = new TLorentzVector();
+       TLorentzVector* Z1 = new TLorentzVector();
+       TLorentzVector* Z2 = new TLorentzVector();
+       TLorentzVector* lep0 = new TLorentzVector();
+       TLorentzVector* lep1 = new TLorentzVector();
+       TLorentzVector* lep2 = new TLorentzVector();
+       TLorentzVector* lep3 = new TLorentzVector();
 
-       lep_e1->SetPxPyPz()
-       *Z_e = *lep_e1 + *lep_e2;
-       *Z_mi = *lep_mi1 + *lep_mi2; */
+       TH1F* histohiggs = new TH1F("histohiggs", "Higgs Mass", 25, 90, 140);
 
        if (fChain == 0) return;
 
@@ -109,6 +107,16 @@ void Analyzer::Loop()
            hbdt3->Fill(LepBDT->at(0));
            hbdt4->Fill(LepBDT->at(1));
            
+           lep0->SetPtEtaPhiM(LepPt->at(0), LepEta->at(0), LepPhi->at(0), 0);
+           lep1->SetPtEtaPhiM(LepPt->at(1), LepEta->at(1), LepPhi->at(1), 0);
+           lep2->SetPtEtaPhiM(LepPt->at(2), LepEta->at(2), LepPhi->at(2), 0);
+           lep3->SetPtEtaPhiM(LepPt->at(3), LepEta->at(3), LepPhi->at(3), 0);
+
+           *Z1 = *lep0 + *lep1;
+           *Z2 = *lep2 + *lep3;
+
+           *higgs = *Z1 + *Z2;
+           histohiggs->Fill(higgs->M());
        }
        auto canvas = new TCanvas("canvas", "canvas", 1200, 800);
        canvas->Divide(2, 2);
@@ -222,5 +230,17 @@ void Analyzer::Loop()
        canvas->SaveAs("Lepton.png");
        canvas->SaveAs("Lepton.pdf");
        canvas->SaveAs("Lepton.root");
-}
+
+       auto canv = new TCanvas("canv", "canv", 1300, 800);
+       gStyle->SetOptStat(0);
+       histohiggs->GetXaxis()->SetTitle("Mass [GeV]");
+       histohiggs->GetYaxis()->SetTitle("# of Events");
+       histohiggs->Draw();
+
+       TLegend* legend5 = new TLegend(.7, .75, .89, .89);
+       legend5->AddEntry(histohiggs, "Higgs Mass");
+       legend5->Draw();
+
+       canv->SaveAs("Higgs.pdf");
+   }
 
