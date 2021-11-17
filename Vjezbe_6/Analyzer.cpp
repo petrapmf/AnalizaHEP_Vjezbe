@@ -62,7 +62,7 @@ void Analyzer::Loop()
        TH1F* hphi3 = new TH1F("hphi3", "Azimuthal angle", 100, -5, 5);
        TH1F* hphi4 = new TH1F("hphi4", "Azimuthal angle", 100, -5, 5);
 
-       TH1F* hbdt1 = new TH1F("hbdt1", "Boosted Decision Tree", 40, 0, 10);
+       TH1F* hbdt1 = new TH1F("hbdt1", "Boosted Decision Tree", 40, 0, 10); 
        TH1F* hbdt2 = new TH1F("hbdt2", "Boosted Decision Tree", 40, 0, 10);
        TH1F* hbdt3 = new TH1F("hbdt3", "Boosted Decision Tree", 40, 0, 10);
        TH1F* hbdt4 = new TH1F("hbdt4", "Boosted Decision Tree", 40, 0, 10);
@@ -75,7 +75,11 @@ void Analyzer::Loop()
        TLorentzVector* lep2 = new TLorentzVector();
        TLorentzVector* lep3 = new TLorentzVector();
 
-       TH1F* histohiggs = new TH1F("histohiggs", "Higgs Mass", 25, 90, 140);
+       TH1F* histohiggs = new TH1F("histohiggs", "Higgs Mass", 25, 90, 140); //no. of bins = ? -> size = 50; one bin = 2; 50 / 2 = 25 
+
+       //to read a histogram from another Root session:
+       TFile f("/home/public/data/ggH125/ZZ4lAnalysis.root"); 
+       TH1F* histoCounter = (TH1F*)f.Get("ZZTree/Counters");
 
        if (fChain == 0) return;
 
@@ -87,25 +91,29 @@ void Analyzer::Loop()
            if (ientry < 0) break;
            nb = fChain->GetEntry(jentry);   nbytes += nb;
 
-           hpt1->Fill(LepPt->at(2));
-           hpt2->Fill(LepPt->at(3));
-           hpt3->Fill(LepPt->at(0));
-           hpt4->Fill(LepPt->at(1));
+           float binContent = histoCounter->GetBinContent(40);
+           //std::cout << binContent << std::endl;
+           float w = (137.0 * 1000.0 * xsec * overallEventWeight) / binContent;
 
-           heta1->Fill(LepEta->at(2));
-           heta2->Fill(LepEta->at(3));
-           heta3->Fill(LepEta->at(0));
-           heta4->Fill(LepEta->at(1));
+           hpt1->Fill(LepPt->at(2), w); //fill with weight
+           hpt2->Fill(LepPt->at(3), w);
+           hpt3->Fill(LepPt->at(0), w);
+           hpt4->Fill(LepPt->at(1), w);
 
-           hphi1->Fill(LepPhi->at(2));
-           hphi2->Fill(LepPhi->at(3));
-           hphi3->Fill(LepPhi->at(0));
-           hphi4->Fill(LepPhi->at(1));
+           heta1->Fill(LepEta->at(2), w);
+           heta2->Fill(LepEta->at(3), w);
+           heta3->Fill(LepEta->at(0), w);
+           heta4->Fill(LepEta->at(1), w);
 
-           hbdt1->Fill(LepBDT->at(2));
-           hbdt2->Fill(LepBDT->at(3));
-           hbdt3->Fill(LepBDT->at(0));
-           hbdt4->Fill(LepBDT->at(1));
+           hphi1->Fill(LepPhi->at(2), w);
+           hphi2->Fill(LepPhi->at(3), w);
+           hphi3->Fill(LepPhi->at(0), w);
+           hphi4->Fill(LepPhi->at(1), w);
+
+           hbdt1->Fill(LepBDT->at(2), w);
+           hbdt2->Fill(LepBDT->at(3), w);
+           hbdt3->Fill(LepBDT->at(0), w);
+           hbdt4->Fill(LepBDT->at(1), w);
            
            lep0->SetPtEtaPhiM(LepPt->at(0), LepEta->at(0), LepPhi->at(0), 0);
            lep1->SetPtEtaPhiM(LepPt->at(1), LepEta->at(1), LepPhi->at(1), 0);
@@ -116,7 +124,8 @@ void Analyzer::Loop()
            *Z2 = *lep2 + *lep3;
 
            *higgs = *Z1 + *Z2;
-           histohiggs->Fill(higgs->M());
+
+           histohiggs->Fill(higgs->M(), w);
        }
        auto canvas = new TCanvas("canvas", "canvas", 1200, 800);
        canvas->Divide(2, 2);
@@ -126,7 +135,7 @@ void Analyzer::Loop()
        hpt1->GetXaxis()->SetTitle("p_{T} [GeV]");
        hpt1->GetYaxis()->SetTitle("# of Events");
        hpt1->SetLineColor(kRed);
-       hpt1->Draw();
+       hpt1->Draw("hist");
 
        hpt2->GetXaxis()->SetTitle("p_{T} [GeV]");
        hpt2->GetYaxis()->SetTitle("# of Events");
@@ -154,7 +163,7 @@ void Analyzer::Loop()
        heta1->GetXaxis()->SetTitle("#eta");
        heta1->GetYaxis()->SetTitle("# of Events");
        heta1->SetLineColor(kRed);
-       heta1->Draw();
+       heta1->Draw("hist");
 
        heta2->GetXaxis()->SetTitle("#eta");
        heta2->GetYaxis()->SetTitle("# of Events");
@@ -182,7 +191,7 @@ void Analyzer::Loop()
        hphi1->GetXaxis()->SetTitle("#phi [rad]");
        hphi1->GetYaxis()->SetTitle("# of Events");
        hphi1->SetLineColor(kRed);
-       hphi1->Draw();
+       hphi1->Draw("hist");
 
        hphi2->GetXaxis()->SetTitle("#phi [rad]");
        hphi2->GetYaxis()->SetTitle("# of Events");
@@ -202,21 +211,25 @@ void Analyzer::Loop()
        canvas->cd(4);
        hbdt1->GetXaxis()->SetTitle("BDT");
        hbdt1->GetYaxis()->SetTitle("# of Events");
+       hbdt1->GetYaxis()->SetRangeUser(0, 100); //do 60000 u zad3
        hbdt1->SetLineColor(kRed);
-       hbdt1->Draw();
+       hbdt1->Draw("hist");
 
        hbdt2->GetXaxis()->SetTitle("BDT");
        hbdt2->GetYaxis()->SetTitle("# of Events");
+       hbdt2->GetYaxis()->SetRangeUser(0, 100);
        hbdt2->SetLineColor(kBlue);
        hbdt2->Draw("hist same");
 
        hbdt3->GetXaxis()->SetTitle("BDT");
        hbdt3->GetYaxis()->SetTitle("# of Events");
+       hbdt3->GetYaxis()->SetRangeUser(0, 100);
        hbdt3->SetLineColor(kGreen);
        hbdt3->Draw("hist same");
 
        hbdt4->GetXaxis()->SetTitle("BDT");
        hbdt4->GetYaxis()->SetTitle("# of Events");
+       hbdt4->GetYaxis()->SetRangeUser(0, 100);
        hbdt4->SetLineColor(kMagenta);
        hbdt4->Draw("hist same");
 
@@ -227,20 +240,26 @@ void Analyzer::Loop()
        legend4->AddEntry(heta4, "Lepton 4", "l");
        legend4->Draw();
 
-       canvas->SaveAs("Lepton.png");
+       /*canvas->SaveAs("Lepton.png");
        canvas->SaveAs("Lepton.pdf");
-       canvas->SaveAs("Lepton.root");
+       canvas->SaveAs("Lepton.root"); */
+
+       canvas->SaveAs("Lepton_w.png");
+       canvas->SaveAs("Lepton_w.pdf");
+       canvas->SaveAs("Lepton_w.root");
 
        auto canv = new TCanvas("canv", "canv", 1300, 800);
        gStyle->SetOptStat(0);
        histohiggs->GetXaxis()->SetTitle("Mass [GeV]");
        histohiggs->GetYaxis()->SetTitle("# of Events");
-       histohiggs->Draw();
+       histohiggs->SetLineColor(kBlue);
+       //histohiggs->SetFillColor(kBlue);
+       histohiggs->Draw("hist"); //ubaci hist ako zelis da ti sve bude lipo spojeno i bez krizica
 
        TLegend* legend5 = new TLegend(.7, .75, .89, .89);
        legend5->AddEntry(histohiggs, "Higgs Mass");
        legend5->Draw();
 
-       canv->SaveAs("Higgs.pdf");
+       canv->SaveAs("Higgs_w.pdf");
    }
 
