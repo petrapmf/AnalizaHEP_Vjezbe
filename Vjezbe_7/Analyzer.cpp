@@ -144,11 +144,13 @@ void Analyzer::Loop()
                signal_disc = 1.0 / (1.0 + p_QQB_BKG_MCFM / p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
                //h_signal->Fill(higgs->M(), w);
                h_signal->Fill(signal_disc, w);
+               h2Ds->Fill(higgs->M(), signal_disc, w);
            }
            else if (path.Contains("qqZZ")) {
                bckgrnd_disc = 1.0 / (1.0 + scale * p_QQB_BKG_MCFM / p_GG_SIG_ghg2_1_ghz1_1_JHUGen);
                //h_background->Fill(higgs->M(), w);
                h_background->Fill(bckgrnd_disc, w);
+               h2Db->Fill(higgs->M(), bckgrnd_disc, w);
            }
            //histohiggs->Fill(higgs->M(), w);
        }
@@ -315,10 +317,10 @@ void Analyzer::Loop()
 
    void Analyzer::DrawDkin() {
        auto c1 = new TCanvas("c1", "c1", 1300, 800);
-       //c1->Divide(2, 2);
+       c1->Divide(2, 2);
        gStyle->SetOptStat(0);
 
-       //c1->cd(1);
+       c1->cd(1);
        h_signal->Scale(1.0 / h_signal->Integral());
        h_signal->GetXaxis()->SetTitle("D_{kin}");
        h_signal->GetYaxis()->SetTitle("# of Events");
@@ -336,7 +338,7 @@ void Analyzer::Loop()
        legend->AddEntry(h_background, "qqZZ", "l");
        legend->Draw();
 
-       /*c1->cd(3);
+       c1->cd(3);
        h2Db->SetTitle("Background");
        h2Db->GetXaxis()->SetTitle("m_{4l} [GeV]");
        h2Db->GetYaxis()->SetTitle("D_{kin}");
@@ -348,8 +350,8 @@ void Analyzer::Loop()
        h2Ds->GetXaxis()->SetTitle("m_{4l} [GeV]");
        h2Ds->GetYaxis()->SetTitle("D_{kin}");
        h2Ds->SetMinimum(-0.01);
-       h2Ds->Draw("COLZ");*/
+       h2Ds->Draw("COLZ");
 
-       //c1->SaveAs("2D.pdf");
-       c1->SaveAs("Dkin.pdf");
+       c1->SaveAs("2D.pdf");
+       //c1->SaveAs("Dkin.pdf");
    }
