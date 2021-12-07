@@ -1462,8 +1462,8 @@ public :
 Analyzer::Analyzer() : fChain(0) 
 {
 // makli smo sve
-    h_background = new TH1F("h_background", "Signal + Background", 50, 0.0, 1.0);
-    h_signal = new TH1F("h_signal", "Signal + Background", 50, 0.0, 1.0);
+    h_background = new TH1F("h_background", "Signal + Background", 50, 70.0, 170.0);
+    h_signal = new TH1F("Max Likelihood", "Signal + Background", 50, 70.0, 170.0);
     h2Db = new TH2F("h2Db", "Background", 50, 70, 170, 20, 0.0, 1.0);
     h2Ds = new TH2F("h2Ds", "Signal", 50, 70, 170, 20, 0.0, 1.0);
 }

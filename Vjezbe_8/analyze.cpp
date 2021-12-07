@@ -18,6 +18,6 @@ int main() {
 	//a->DrawDkin();
 
 	a->Fit();
-	a->FitML();
+	//a->FitML();
 	return 0;
 }

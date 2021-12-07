@@ -53,10 +53,14 @@ void Analyzer::Loop()
 
    void Analyzer::Plot(TString path) 
    {
-       THStack* hs = new THStack("hs", "hs"); //THStack --> collection of TH1 (or derived) objects
-       TFile* f = new TFile("/home/public/data/" + path + "/ZZ4lAnalysis.root");
-       TTree* tree = (TTree*) f->Get("ZZTree/candTree");
-       Init(tree); //nadodano iz .h, al bez onih ifova
+       TTree* tree = new TTree;
+
+       TFile* f = (TFile*)gROOT->GetListOfFiles()->FindObject("/home/public/data/" + path + "/ZZ4lAnalysis.root");
+       if (!f || !f->IsOpen())
+           f = new TFile("/home/public/data/" + path + "/ZZ4lAnalysis.root");
+       TDirectory* dir = (TDirectory*)f->Get("/home/public/data/" + path + "/ZZ4lAnalysis.root:/ZZTree");
+       dir->GetObject("candTree", tree);
+       Init(tree);
        TH1F* histoCounter = (TH1F*)f->Get("ZZTree/Counters");
        float binContent = histoCounter->GetBinContent(40);
 
@@ -167,9 +171,9 @@ void Analyzer::Loop()
        TF1* fa = new TF1("fa", "[0] + [1]*x + [2]*x*x", 110, 150); //kvadratna Q(x; A, B, C) = A + Bx + Cx^2
        TF1* fb = new TF1("fb", "([0]*[1])/((x*x - [2]*[2])*(x*x - [2]*[2]) + 0.25*[1]*[1])", 110, 150); //Breit-Wigner BW = D*gama/((x^2 - M^2)^2 + 0.25*gama^2)
        TF1* fc = new TF1("fc", "[0] + [1]*x + [2]*x*x + ([3]*[4])/((x*x - [5]*[5])*(x*x - [5]*[5]) + 0.25*[4]*[4])", 110, 150); //suma
-       float value_first_parameter = 1.0, value_second_parameter = 0.01, value_third_parameter = -0.0001; // minjamo 1.0, 0.01 i -0.0001 u parametre dobivene fitanjem
-       float value_1st_parameter = 70.0, value_2nd_parameter = 200.0, value_3rd_parameter = 125.0; // minjamo 70.0, 200.0 i 125.0 u parametre dobivene fitanjem
-       //!!! krivi fit...umisto fill(dkin, w) ide fill(masa, w), ali nema podataka...?
+       float value_first_parameter = 51.8, value_second_parameter = -0.6213, value_third_parameter = 0.002451; // minjamo 1.0, 0.01 i -0.0001 u parametre dobivene fitanjem
+       float value_1st_parameter = 2.042e+04, value_2nd_parameter = 829.9, value_3rd_parameter = 124.4; // minjamo 70.0, 200.0 i 125.0 u parametre dobivene fitanjem
+      
        fa->SetParameter(0, value_first_parameter);
        fa->SetParameter(1, value_second_parameter);
        fa->SetParameter(2, value_third_parameter);
@@ -190,23 +194,21 @@ void Analyzer::Loop()
        fa->SetParName(2, "C");
 
        fb->SetParName(0, "D");
-       fb->SetParName(1, "gama");
+       fb->SetParName(1, "#Gamma");
        fb->SetParName(2, "M");
 
        fc->SetParName(0, "A");
        fc->SetParName(1, "B");
        fc->SetParName(2, "C");
        fc->SetParName(3, "D");
-       fc->SetParName(4, "gama");
+       fc->SetParName(4, "#Gamma");
        fc->SetParName(5, "M");
 
-       fa->SetLineColor(kBlue);
-       fb->SetLineColor(kYellow);
+       fa->SetLineColor(kYellow);
+       fb->SetLineColor(kBlue);
        fc->SetLineColor(kGreen);
 
-       fc->SetTitle("Model");
-       fc->GetXaxis()->SetTitle("m [GeV]");
-       fc->GetYaxis()->SetTitle("# of Events");
+       fc->SetTitle("Model; M [GeV]; # of Events");
 
        fc->Draw();
        fb->Draw("same");
@@ -219,13 +221,14 @@ void Analyzer::Loop()
        legend->Draw();
 
        canvas->cd(2);
-       h_signal->SetLineColor(kYellow);
-       h_background->SetLineColor(kBlue);
+       h_signal->SetLineColor(kBlue);
+       h_background->SetLineColor(kYellow);
        h_signal->Add(h_background);
        h_signal->GetXaxis()->SetRangeUser(110.0, 150.0);
+       h_signal->GetYaxis()->SetRangeUser(0.0, 120.0);
 
        h_signal->Draw("pe1x0");
-       h_signal->SetTitle("Reconstructed Mass");
+       h_signal->SetTitle("Reconstructed Mass; M [GeV]; # of Events");
        h_signal->Fit(fc);
 
        canvas->SaveAs("Q&BW&Fit.pdf");
@@ -237,9 +240,9 @@ void Analyzer::Loop()
        TF1* fML = new TF1("fML", "[0] + [1]*x + [2]*x*x + ([3]*[4])/((x*x - [5]*[5])*(x*x - [5]*[5]) + 0.25*[4]*[4]) + ([6]*[7])/((x*x - [8]*[8])*(x*x - [8]*[8]) + 0.25*[7]*[7])", 70.0, 170.0);
        gStyle->SetOptFit();
 
-       float value_first_parameter = 1.0, value_second_parameter = 0.01, value_third_parameter = -0.0001; // minjamo 1.0, 0.01 i -0.0001 u parametre dobivene fitanjem
-       float value_1st_parameter = 70.0, value_2nd_parameter = 200.0, value_3rd_parameter = 125.0; // minjamo 70.0, 200.0 i 125.0 u parametre dobivene fitanjem
-       float value_1_parameter = 70.0, value_2_parameter = 200.0, value_3_parameter = 125.0;
+       float value_first_parameter = -66.75, value_second_parameter = 1.244, value_third_parameter = -0.00459; // minjamo 1.0, 0.01 i -0.0001 u parametre dobivene fitanjem
+       float value_1st_parameter = 5412.0, value_2nd_parameter = 83.84, value_3rd_parameter = 125.3; // minjamo 70.0, 200.0 i 125.0 u parametre dobivene fitanjem
+       float value_1_parameter = 3.251e+04, value_2_parameter = 837.6, value_3_parameter = 90.7;
 
        fML->SetParameter(0, value_first_parameter);
        fML->SetParameter(1, value_second_parameter);
@@ -256,18 +259,21 @@ void Analyzer::Loop()
        fML->SetParName(0, "A");
        fML->SetParName(1, "B");
        fML->SetParName(2, "C");
-       fML->SetParName(0, "D1");
-       fML->SetParName(1, "gama1");
-       fML->SetParName(2, "M1");
-       fML->SetParName(3, "D2");
-       fML->SetParName(4, "gama2");
-       fML->SetParName(5, "M2");
+       fML->SetParName(3, "D_{s}");
+       fML->SetParName(4, "#Gamma_{s}");
+       fML->SetParName(5, "M_{s}");
+       fML->SetParName(6, "D_{b}");
+       fML->SetParName(7, "#Gamma_{b}");
+       fML->SetParName(8, "M_{b}");
 
        fML->SetLineColor(kCyan);
        fML->Draw();
 
-       h_signal->SetLineColor(kYellow);
+       h_signal->SetLineColor(kBlue);
        h_signal->Add(h_background);
+       h_signal->SetTitle("Reconstructed Mass; M [GeV]; # of Events");
+       h_signal->Draw("pe1x0");
+       h_signal->Fit(fML);
 
        c->SaveAs("MLfit.pdf");
    }
