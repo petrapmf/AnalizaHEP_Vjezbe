@@ -105,7 +105,7 @@ void Analyzer::PlotHist() {
 
     double yMin = fLN->GetMinimum(); //ispadne 2422.24
 
-    double x1 = fLN->GetX(yMin + 1.0, 0, fLN->GetMinimumX() - 0.0001);
+    double x1 = fLN->GetX(yMin + 1.0, 1.0, fLN->GetMinimumX() - 0.0001);
     double x2 = fLN->GetX(yMin + 1.0, fLN->GetMinimumX() + 0.0001, 1.5);
 
     //std::cout << "x1 = " << x1 << std::endl; // 0.0124743
@@ -118,7 +118,7 @@ void Analyzer::PlotHist() {
     std::cout << "Sigma2 za 2ln = " << sigma2 << std::endl;
 
     double tau_analytical = sum / nentries;
-    double sigma_analytical = sqrt(-1.0 * (pow(tau_analytical, 3.0) / nentries * tau_analytical - 2 * sum)); // -1.0 jer nazivnik daje negativno...
+    double sigma_analytical = sqrt(-1.0 * (pow(tau_analytical, 3.0) / (nentries * tau_analytical - 2 * sum))); // -1.0 jer nazivnik daje negativno...
 
     //std::cout << nentries * tau_analytical - 2 * sum << std::endl;
     
