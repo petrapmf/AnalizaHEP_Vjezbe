@@ -36,8 +36,8 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
-   virtual void     PlotHist();
-   virtual void     Plot();
+   virtual void     PlotLM();
+   virtual void     PlotChi();
 };
 
 #endif

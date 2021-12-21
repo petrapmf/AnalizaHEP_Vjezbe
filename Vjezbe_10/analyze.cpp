@@ -11,6 +11,6 @@ using namespace std;
 int main() {
 	Analyzer* a = new Analyzer();
 
-	a->Plot();
+	a->PlotChi();
 	return 0;
 }

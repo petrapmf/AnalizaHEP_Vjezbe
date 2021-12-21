@@ -48,7 +48,7 @@ void Analyzer::Loop()
    }
 }
 
-void Analyzer::PlotHist() {
+void Analyzer::PlotLM() { //Vjezbe 9, Likelihood metoda
     TH1F* h = new TH1F("h", "Distribution", 50, 0, 10);
     TF1* fDecay = new TF1("fDecay", "[0]*(1.0/[1])*exp((-1.0/[1])*x)", 0.0, 20.0);
     TF1* fLikelihood = new TF1("fLikelihood", "195.2*(1.0/x)*exp((-1.0/x)*1.0)", 0.0, 20.0);
@@ -128,7 +128,7 @@ void Analyzer::PlotHist() {
 
 }
 
-void Analyzer::Plot() {
+void Analyzer::PlotChi() { //Vjezbe 10, chi-square metoda
     auto c1 = new TCanvas("c1", "c1", 200, 10, 700, 500);
     c1->Divide(2);
 
@@ -142,9 +142,9 @@ void Analyzer::Plot() {
 
     TF1* f = new TF1("f", "x/[0]", 0.0, 10.0); //F = ma
     f->SetParameter(0, 1.0);
-    f->SetParName(0, "par");
+    f->SetParName(0, "m");
     auto graph = new TGraphErrors(5, F, a, F_err, a_err);
-    graph->SetMarkerColor(kBlue);
+    graph->SetTitle("F = ma; F [N]; a [m/s^{2}]");
     graph->Fit(f);
     graph->Draw("AP");
 
@@ -152,7 +152,7 @@ void Analyzer::Plot() {
     TF1* fchi = new TF1("fchi", "pow((9.8 - 1.0*x), 2.0)/pow(1.0, 2.0) + pow((21.2 - 2.0*x), 2.0)/pow(1.9, 2.0) + pow((34.5 - 3.0*x), 2.0)/pow(3.1, 2.0) + pow((39.9 - 4.0*x), 2.0)/pow(3.9, 2.0) + pow((48.5 - 5.0*x), 2.0)/pow(5.1, 2.0)", 9.0, 11.0);
     fchi->SetLineColor(kCyan);
     fchi->GetYaxis()->SetRangeUser(0, 10.0);
-    fchi->SetTitle("Chi square");
+    fchi->SetTitle("Chi-square; #hat{#theta}; #chi^{2}");
     fchi->Draw();
 
     double yMin = fchi->GetMinimum();
@@ -167,6 +167,18 @@ void Analyzer::Plot() {
     double m = 1.0 / theta;
     std::cout << "Sigma1 = " << 1.0*(sigma1/pow(theta, 2.0)) << std::endl;
     std::cout << "Sigma2 = " << -1.0*(sigma2/pow(theta, 2.0)) << std::endl;
+
+    double theta_analytical, numerator = 0.0, denominator = 0.0;
+    int i;
+    for (i = 0; i < 5; i++) {
+        numerator = numerator + (a[i] * F[i]) / pow(a_err[i], 2.0);
+        denominator = denominator + pow(F[i] / a_err[i], 2.0);
+    }
+    theta_analytical = numerator / denominator;
+    std::cout << "M analytical = " << 1.0 / theta_analytical << std::endl;
+
+    double sigma_analytical = 1 / sqrt(denominator);
+    std::cout << "Sigma analytical = +-" << sigma_analytical / pow(theta_analytical, 2.0) << std::endl;
 
     auto l1 = new TLine(x1, yMin + 1.0, x2, yMin + 1.0);
     auto l2 = new TLine(theta, 0, theta, yMin);
