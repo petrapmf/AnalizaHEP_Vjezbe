@@ -12,6 +12,6 @@ int main() {
 	Analyzer* a = new Analyzer();
 	a->Loop();
 	a->Plot();
-	a->TMVAClassification();
+	a->TMVATraining();
 	return 0;
 }

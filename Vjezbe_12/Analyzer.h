@@ -173,9 +173,10 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    virtual void     Plot();
-   virtual void TMVAClassification();
-   TH1F* hs_pt;
-   TH1F* hb_pt;
+   virtual void     TMVATraining();
+   virtual void     TMVAPlot();
+   TH1F*            hs[8];
+   TH1F*            hb[8];
 };
 
 #endif
@@ -193,8 +194,22 @@ Analyzer::Analyzer(TTree *tree) : fChain(0)
       f->GetObject("background",bckg);
       f->GetObject("signal", signal);
    }
-  hs_pt = new TH1F("hspt", "Electron Transversal Momentum", 100, 0, 100);
-  hb_pt = new TH1F("hbpt", "Electron Transversal Momentum", 100, 0, 100);
+  hs[0] = new TH1F("hs_1", "Electron Transversal Momentum", 100, 0, 100);
+  hb[0] = new TH1F("hb_1", "Electron Transversal Momentum", 100, 0, 100);
+  hs[1] = new TH1F("hs_2", "scl_eta", 100, -4, 4);
+  hb[1] = new TH1F("hb_2", "scl_eta", 100, -4, 4);
+  hs[2] = new TH1F("hs_3", "ele_hadronicOverEm", 100, 0, 0.2);
+  hb[2] = new TH1F("hb_3", "ele_hadronicOverEm", 100, 0, 0.2);
+  hs[3] = new TH1F("hs_4", "ele_gsfchi2", 100, 0, 6);
+  hb[3] = new TH1F("hb_4", "ele_gsfchi2", 100, 0, 6);
+  hs[4] = new TH1F("hs_5", "ele_fbrem", 100, -1.2, 1.2);
+  hb[4] = new TH1F("hb_5", "ele_fbrem", 100, -1.2, 1.2);
+  hs[5] = new TH1F("hs_6", "ele_ep", 100, 0, 6);
+  hb[5] = new TH1F("hb_6", "ele_ep", 100, 0, 6);
+  hs[6] = new TH1F("hs_7", "ele_eelepout", 100, 0, 8);
+  hb[6] = new TH1F("hb_7", "ele_eelepout", 100, 0, 8);
+  hs[7] = new TH1F("hs_8", "ele_pfChargedHadIso", 100, 0, 0.8);
+  hb[7] = new TH1F("hb_8", "ele_pfChargedHadIso", 100, 0, 0.8);
 }
 
 Analyzer::~Analyzer()

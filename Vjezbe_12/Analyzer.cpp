@@ -3,6 +3,9 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TString.h>
+#include <TLegend.h>
+#include <TGraph.h>
 
 void Analyzer::Loop()
 {
@@ -42,7 +45,14 @@ void Analyzer::Loop()
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       
-      hs_pt->Fill(ele_pt);
+      hs[0]->Fill(ele_pt);
+      hs[1]->Fill(scl_eta);
+      hs[2]->Fill(ele_hadronicOverEm);
+      hs[3]->Fill(ele_gsfchi2);
+      hs[4]->Fill(ele_fbrem);
+      hs[5]->Fill(ele_ep);
+      hs[6]->Fill(ele_eelepout);
+      hs[7]->Fill(ele_pfChargedHadIso);
    }
 
    Init(bckg);
@@ -56,30 +66,55 @@ void Analyzer::Loop()
        Long64_t ientry = LoadTree(jentry);
        if (ientry < 0) break;
        nb = fChain->GetEntry(jentry);   nbytes += nb;
-       hb_pt->Fill(ele_pt);
+       hb[0]->Fill(ele_pt);
+       hb[1]->Fill(scl_eta);
+       hb[2]->Fill(ele_hadronicOverEm);
+       hb[3]->Fill(ele_gsfchi2);
+       hb[4]->Fill(ele_fbrem);
+       hb[5]->Fill(ele_ep);
+       hb[6]->Fill(ele_eelepout);
+       hb[7]->Fill(ele_pfChargedHadIso);
    }
 }
 
 void Analyzer::Plot() {
     auto c = new TCanvas("c", "c", 1300, 1300);
-    c->Divide(4, 4);
+    c->Divide(2, 4);
     gStyle->SetOptStat(0);
+    
+    TString Xaxis_title[8] = { "ele_pt", "scl_eta", "ele_hadronicOverEm", "ele_gsfchi2", "ele_fbrem", "ele_ep", "ele_eelepout", "ele_pfChargedHadIso" };
+    for (int i = 0; i < 8; i++) {
+        c->cd(i + 1);
 
-    c->cd(1);
-    hs_pt->GetXaxis()->SetTitle("p_{T} [GeV]");
-    hs_pt->GetYaxis()->SetTitle("# of Events");
-    hs_pt->SetLineColor(kRed);
-    hs_pt->Draw("hist");
+        hs[i]->GetXaxis()->SetTitle(Xaxis_title[i]);
+        hb[i]->GetXaxis()->SetTitle(Xaxis_title[i]);
+        hs[i]->GetYaxis()->SetTitle("# of Events");
+        hb[i]->GetYaxis()->SetTitle("# of Events");
+        hs[i]->SetLineColor(kRed);
+        hb[i]->SetLineColor(kBlue);
 
-    hb_pt->GetXaxis()->SetTitle("p_{T} [GeV]");
-    hb_pt->GetYaxis()->SetTitle("# of Events");
-    hb_pt->SetLineColor(kBlue);
-    hb_pt->Draw("hist same");
+        TLegend* legend = new TLegend(.7, .75, .89, .89);
+        legend->AddEntry(hs[i], "Signal", "l");
+        legend->AddEntry(hb[i], "Background", "l");
+        legend->Draw();
+
+        int signal_peak = hs[i]->GetBinContent(hs[i]->GetMaximumBin()); //GetMaximumBin vraca lokaciju max vrijednosti!!
+        int bckg_peak = hb[i]->GetBinContent(hb[i]->GetMaximumBin());
+
+        if (signal_peak > bckg_peak) {
+            hs[i]->Draw("hist");
+            hb[i]->Draw("hist same");
+        }
+        else {
+            hb[i]->Draw("hist");
+            hs[i]->Draw("hist same");
+        }
+    }
 
     c->SaveAs("Plot.pdf");
 }
 
-void Analyzer::TMVAClassification()
+void Analyzer::TMVATraining()
 {
     // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
     TString outfileName("TMVA.root");
@@ -107,7 +142,8 @@ void Analyzer::TMVAClassification()
     // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
     dataloader->AddVariable("ele_pt", 'F');
     dataloader->AddVariable("scl_eta", 'F');
-    dataloader->AddVariable("ele_hadronicOverEm", 'F');
+    dataloader->AddVariable("ele_fbrem", 'F');
+    dataloader->AddVariable("ele_eelepout", 'F');
    
     // You can add so-called "Spectator variables", which are not used in the MVA training,
     // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -144,9 +180,10 @@ void Analyzer::TMVAClassification()
     // src/MethoCuts.cxx, etc, or here: http://tmva.sourceforge.net/optionRef.html
     // it is possible to preset ranges in the option string in which the cut optimisation should be done:
     // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable
-    // Cut optimisation
-        factory->BookMethod(dataloader, TMVA::Types::kLikelihood, "Likelihood",
-            "H:!V:TransformOutput:PDFInterpol=Spline2:NSmoothSig[0]=20:NSmoothBkg[0]=20:NSmoothBkg[1]=10:NSmooth=1:NAvEvtPerBin=50");
+    // Boosted Decision Trees
+    // Adaptive Boost
+        factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT",
+            "!H:!V:NTrees=850:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20");
     
     factory->TrainAllMethods();
     // Evaluate all MVAs using the set of test events
@@ -161,4 +198,8 @@ void Analyzer::TMVAClassification()
     delete factory;
     delete dataloader;
     // Launch the GUI for the root mac
+}
+
+void Analyzer::TMVAPlot() {
+    
 }
