@@ -144,6 +144,10 @@ void Analyzer::TMVATraining()
     dataloader->AddVariable("scl_eta", 'F');
     dataloader->AddVariable("ele_fbrem", 'F');
     dataloader->AddVariable("ele_eelepout", 'F');
+    dataloader->AddVariable("ele_hadronicOverEm", 'F');
+    dataloader->AddVariable("ele_gsfchi2", 'F');
+    dataloader->AddVariable("ele_ep", 'F');
+    dataloader->AddVariable("ele_pfChargedHadIso", 'F');
    
     // You can add so-called "Spectator variables", which are not used in the MVA training,
     // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -201,5 +205,37 @@ void Analyzer::TMVATraining()
 }
 
 void Analyzer::TMVAPlot() {
-    
+    TFile* f = new TFile("TMVA.root");
+
+    TGraph* sig;
+    TGraph* bckg;
+    sig = (TGraph*)f->Get("dataset/Method_BDT/BDT/MVA_BDT_S");
+    bckg = (TGraph*)f->Get("dataset/Method_BDT/BDT/MVA_BDT_B");
+
+    TH1F* roc;
+    roc = (TH1F*)f->Get("dataset/Method_BDT/BDT/MVA_BDT_effBvsS");
+
+    auto c = new TCanvas("c", "c", 1900, 800);
+    c->Divide(2);
+    gStyle->SetOptStat(0);
+
+    c->cd(1);
+    sig->SetLineColor(kRed);
+    bckg->SetLineColor(kBlue);
+    sig->SetTitle("MVA result distribution");
+    sig->Draw();
+    bckg->Draw("same");
+
+    TLegend* legend = new TLegend(.8, .82, .95, .92);
+    legend->AddEntry(sig, "Signal", "l");
+    legend->AddEntry(bckg, "Background", "l");
+    legend->Draw();
+
+    c->cd(2);
+    roc->SetLineColor(kViolet);
+    //roc->Eval(0.9);
+    std::cout << "Background omission for 90% of signal electrons: " << roc->Interpolate(0.9) * 100.0 << "%" << std::endl; //daje 0.0446878
+    roc->Draw();
+
+    c->SaveAs("MVA_BDT.pdf");
 }
