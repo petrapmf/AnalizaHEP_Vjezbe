@@ -146,13 +146,13 @@ void Analyzer::PlotCPBelt(int N, double C) {
 
 void Analyzer::Dice(int N, double C) {
     srand(time(NULL));
-    int br, ptrue;
+    int br, ptrue = 0;
     double p_upper, p_lower;
 
     for (int i = 0; i < 1000; i++) {
         br = 0;
         for (int j = 0; j < N; j++) {
-            if ((rand() % 6 + 1) == 6) {
+            if (rand() % 6 == 0) {
                 br++;
             }
         }
