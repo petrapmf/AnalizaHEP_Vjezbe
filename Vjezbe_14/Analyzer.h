@@ -23,6 +23,7 @@ public :
    Int_t           fCurrent; //!current Tree number in a TChain
    TH1F* h;
    TH1F* h_chi;
+   TH1F* h_;
    TRandom3* r3;
    TF1* f;
 
@@ -44,7 +45,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    virtual void     TestStat();
-   //virtual void     Higgs();
+   virtual void     Higgs();
 };
 
 #endif
@@ -56,6 +57,7 @@ Analyzer::Analyzer(TTree *tree) : fChain(0)
     h_chi = new TH1F("#chi^{2}", "Test Statistic PDF", 200, 0, 20);
     r3 = new TRandom3();
     f = new TF1("PDF", "[0]*exp(-x/[1])", 0, 700);
+    h_ = new TH1F("h_", "Sensitivity", 200, 0, 700);
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
